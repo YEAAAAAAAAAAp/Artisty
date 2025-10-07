@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artisty - 예술가-콜렉터 상거래 플랫폼</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-01JMZ0MSB7"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-01JMZ0MSB7');
+    </script>
     <style>
         * {
             margin: 0;
@@ -1929,6 +1938,13 @@
 
     <script>
         function switchTab(tabName) {
+            // GA4 이벤트 추적
+            gtag('event', 'tab_switched', {
+                'event_category': 'navigation',
+                'event_label': tabName,
+                'user_type': tabName
+            });
+            
             // 모든 탭 버튼에서 active 클래스 제거
             const tabButtons = document.querySelectorAll('.tab-button');
             tabButtons.forEach(button => {
@@ -1994,11 +2010,25 @@
 
         // 체험 시작 함수들
         function startCollectorExperience() {
+            // GA4 이벤트 추적
+            gtag('event', 'collector_experience_started', {
+                'event_category': 'engagement',
+                'event_label': 'collector_experience',
+                'user_type': 'collector'
+            });
+            
             alert('콜렉터 체험이 시작됩니다! 🎨\n\nAI 작품 분석, 스타일 매칭, 투자 가치 분석 등의 기능을 체험해보세요.');
             closeModal('collector-modal');
         }
 
         function startArtistExperience() {
+            // GA4 이벤트 추적
+            gtag('event', 'artist_experience_started', {
+                'event_category': 'engagement',
+                'event_label': 'artist_experience',
+                'user_type': 'artist'
+            });
+            
             alert('예술가 체험이 시작됩니다! 🎨\n\n포트폴리오 제작, 스토리텔링, 콜렉터 매칭 등의 기능을 체험해보세요.');
             closeModal('artist-modal');
         }
@@ -2008,6 +2038,13 @@
             const modal = document.getElementById('preorder-modal');
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
+            
+            // GA4 이벤트 추적
+            gtag('event', 'preorder_modal_opened', {
+                'event_category': 'engagement',
+                'event_label': type,
+                'user_type': type
+            });
             
             // 타입에 따른 제목 변경
             const title = document.querySelector('.preorder-title');
@@ -2041,6 +2078,13 @@
                 return;
             }
             
+            // GA4 이벤트 추적 - 사전예약 신청 완료
+            gtag('event', 'preorder_submitted', {
+                'event_category': 'conversion',
+                'event_label': 'preorder_signup',
+                'value': 1
+            });
+            
             // 사전예약 신청 완료
             alert(`사전예약 신청이 완료되었습니다! 🎉\n\n이름: ${name}\n이메일: ${email}\n\n출시 시 우선 알림을 드리겠습니다.`);
             closePreorderModal();
@@ -2063,6 +2107,13 @@
             document.getElementById('feature-name').textContent = featureName;
             document.getElementById('feature-description').textContent = featureDescription;
             
+            // GA4 이벤트 추적
+            gtag('event', 'feature_coming_soon_viewed', {
+                'event_category': 'engagement',
+                'event_label': featureName,
+                'feature_name': featureName
+            });
+            
             const modal = document.getElementById('coming-soon-modal');
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -2075,6 +2126,13 @@
         }
 
         function notifyWhenReady() {
+            // GA4 이벤트 추적
+            gtag('event', 'feature_notification_requested', {
+                'event_category': 'engagement',
+                'event_label': 'feature_notification',
+                'feature_name': document.getElementById('feature-name').textContent
+            });
+            
             alert('알림 신청이 완료되었습니다! 🔔\n\n해당 기능이 출시되면 이메일로 알려드리겠습니다.');
             closeComingSoonModal();
         }
@@ -2088,6 +2146,12 @@
 
         // 페이지 로드 시 초기화
         document.addEventListener('DOMContentLoaded', function() {
+            // GA4 이벤트 추적 - 페이지 로드
+            gtag('event', 'page_view', {
+                'event_category': 'engagement',
+                'event_label': 'landing_page_loaded'
+            });
+            
             // 기본적으로 콜렉터 탭이 활성화되어 있음
             console.log('Artisty 플랫폼이 로드되었습니다.');
             
@@ -2115,6 +2179,12 @@
                 observer.observe(el);
             });
         });
+
+        /* 
+        ========================================
+        GA4 이벤트 추적 테스트 코드 (배포 완료 - 삭제됨)
+        ========================================
+        */
     </script>
 </body>
 </html>
