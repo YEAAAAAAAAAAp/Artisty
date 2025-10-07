@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artisty - 예술가-콜렉터 상거래 플랫폼</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            color: #1e293b;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* 공통 상단 영역 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .tab-button {
+            padding: 14px 28px;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .tab-button.active {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .tab-button.active::before {
+            left: 0;
+        }
+
+        .tab-button:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+        }
+
+        .tab-button:hover::before {
+            left: 0;
+        }
+
+        /* 히어로 섹션 */
+        .hero-section {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            z-index: -2;
+        }
+
+        .hero-artwork {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><defs><linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23f59e0b;stop-opacity:0.8" /><stop offset="50%" style="stop-color:%23ef4444;stop-opacity:0.6" /><stop offset="100%" style="stop-color:%238b5cf6;stop-opacity:0.4" /></linearGradient></defs><rect width="800" height="600" fill="url(%23grad1)"/><circle cx="200" cy="150" r="80" fill="%23ffffff" opacity="0.3"/><circle cx="600" cy="300" r="120" fill="%23ffffff" opacity="0.2"/><circle cx="400" cy="450" r="60" fill="%23ffffff" opacity="0.4"/><path d="M100,100 Q300,50 500,150 T700,200" stroke="%23ffffff" stroke-width="3" fill="none" opacity="0.5"/><path d="M150,400 Q350,350 550,450 T750,500" stroke="%23ffffff" stroke-width="2" fill="none" opacity="0.3"/></svg>') center/cover;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        /* 메인 콘텐츠 영역 */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(40px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        /* 2단 레이아웃 */
+        .layout-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        /* 좌측 소개 섹션 */
+        .intro-section {
+            padding-right: 20px;
+            position: relative;
+        }
+
+        /* 예술 작품 카드 */
+        .artwork-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+        }
+
+        .artwork-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .artwork-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 25%, #ef4444 50%, #dc2626 75%, #0891b2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .artwork-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200"><defs><linearGradient id="paint1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23fbbf24;stop-opacity:0.9" /><stop offset="25%" style="stop-color:%23f59e0b;stop-opacity:0.8" /><stop offset="50%" style="stop-color:%23ef4444;stop-opacity:0.7" /><stop offset="75%" style="stop-color:%23dc2626;stop-opacity:0.6" /><stop offset="100%" style="stop-color:%230891b2;stop-opacity:0.5" /></linearGradient></defs><rect width="400" height="200" fill="url(%23paint1)"/><circle cx="80" cy="60" r="25" fill="%23ffffff" opacity="0.3"/><circle cx="320" cy="140" r="35" fill="%23ffffff" opacity="0.2"/><circle cx="200" cy="100" r="20" fill="%23ffffff" opacity="0.4"/><path d="M20,50 Q100,30 180,80 T340,120" stroke="%23ffffff" stroke-width="4" fill="none" opacity="0.6"/><path d="M60,150 Q140,130 220,180 T380,160" stroke="%23ffffff" stroke-width="3" fill="none" opacity="0.4"/><rect x="50" y="40" width="30" height="20" fill="%23ffffff" opacity="0.3" rx="3"/><rect x="300" y="120" width="25" height="15" fill="%23ffffff" opacity="0.4" rx="2"/></svg>') center/cover;
+        }
+
+        .artwork-details {
+            padding: 24px;
+        }
+
+        .artwork-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .artist-info {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .price-tag {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #374151;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            border: 1px solid rgba(209, 213, 219, 0.5);
+        }
+
+        .intro-title {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #1e293b, #475569);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+        }
+
+        .intro-subtitle {
+            font-size: 20px;
+            color: #64748b;
+            margin-bottom: 48px;
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 18px 36px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 16px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button.blue {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .cta-button.blue:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.4);
+        }
+
+        .cta-button.purple {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .cta-button.purple:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(139, 92, 246, 0.4);
+        }
+
+        /* 우측 카드 섹션 */
+        .cards-section {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            border-radius: 24px;
+            padding: 32px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .card-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #1e293b;
+            letter-spacing: -0.5px;
+        }
+
+        .card-description {
+            font-size: 15px;
+            color: #64748b;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .card-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #3b82f6;
+            text-decoration: none;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: #3b82f6;
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .card-button:hover::before {
+            left: 0;
+        }
+
+        .card-button:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .card-button.purple {
+            color: #8b5cf6;
+            border-color: #8b5cf6;
+        }
+
+        .card-button.purple::before {
+            background: #8b5cf6;
+        }
+
+        .card-button.purple:hover {
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        /* 푸터 */
+        .footer {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 60px 40px;
+            text-align: center;
+            border-top: 1px solid rgba(226, 232, 240, 0.5);
+            margin-top: 120px;
+            position: relative;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+
+        .footer-text {
+            color: #64748b;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .logo {
+                font-size: 28px;
+            }
+
+            .tab-container {
+                gap: 15px;
+            }
+
+            .tab-button {
+                padding: 12px 24px;
+                font-size: 14px;
+            }
+
+            .hero-artwork {
+                width: 100%;
+                opacity: 0.2;
+            }
+
+            .main-content {
+                padding: 40px 20px;
+            }
+
+            .layout-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .intro-section {
+                padding-right: 0;
+                text-align: center;
+            }
+
+            .artwork-card {
+                margin-bottom: 30px;
+            }
+
+            .artwork-image {
+                height: 180px;
+            }
+
+            .intro-title {
+                font-size: 36px;
+            }
+
+            .intro-subtitle {
+                font-size: 18px;
+            }
+
+            .cards-section {
+                gap: 24px;
+            }
+
+            .feature-card {
+                padding: 24px;
+            }
+
+            .card-title {
+                font-size: 20px;
+            }
+
+            .card-icon {
+                font-size: 36px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 10px 15px;
+            }
+
+            .main-content {
+                padding: 30px 15px;
+            }
+
+            .intro-title {
+                font-size: 28px;
+            }
+
+            .intro-subtitle {
+                font-size: 16px;
+            }
+
+            .cta-button {
+                padding: 16px 32px;
+                font-size: 14px;
+            }
+
+            .feature-card {
+                padding: 20px;
+            }
+
+            .card-icon {
+                font-size: 32px;
+            }
+
+            .card-title {
+                font-size: 18px;
+            }
+
+            .card-description {
+                font-size: 14px;
+            }
+
+            .footer {
+                padding: 40px 20px;
+            }
+
+            .artwork-card {
+                margin-bottom: 25px;
+            }
+
+            .artwork-image {
+                height: 160px;
+            }
+
+            .artwork-details {
+                padding: 20px;
+            }
+
+            .artwork-title {
+                font-size: 18px;
+            }
+
+            .artist-info {
+                font-size: 13px;
+            }
+
+            .price-tag {
+                font-size: 14px;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 공통 상단 영역 -->
+    <header class="header">
+        <a href="#" class="logo">Artisty</a>
+        <div class="tab-container">
+            <button class="tab-button active" onclick="switchTab('collector')">콜렉터</button>
+            <button class="tab-button" onclick="switchTab('artist')">예술가</button>
+        </div>
+    </header>
+
+    <!-- 히어로 섹션 -->
+    <section class="hero-section">
+        <div class="hero-background"></div>
+        <div class="hero-artwork"></div>
+        
+        <!-- 메인 콘텐츠 영역 -->
+        <main class="main-content">
+        <!-- 콜렉터 전용 페이지 -->
+        <section id="collector-section" class="content-section active">
+            <div class="layout-container">
+                <!-- 좌측 소개 섹션 -->
+                <div class="intro-section">
+                    <!-- 예술 작품 카드 -->
+                    <div class="artwork-card">
+                        <div class="artwork-image"></div>
+                        <div class="artwork-details">
+                            <h3 class="artwork-title">꿈을 키우는 손</h3>
+                            <p class="artist-info">직접적 작가 (35세) • 수채화 • 유화</p>
+                            <div class="price-tag">₩500,000</div>
+                        </div>
+                    </div>
+                    
+                    <h1 class="intro-title">🎨 아티스트 콜렉터 전용 플랫폼</h1>
+                    <p class="intro-subtitle">깊이 있는 작품 스토리를 발견하고 작가와 직접 소통하며 특별한 컬렉션을 시작하세요.</p>
+                    <a href="#" class="cta-button blue">관련 등록하기 →</a>
+                </div>
+
+                <!-- 우측 카드 섹션 -->
+                <div class="cards-section">
+                    <div class="feature-card">
+                        <span class="card-icon">🤖</span>
+                        <h3 class="card-title">AI 기반 스토리 탐색</h3>
+                        <p class="card-description">인공지능이 분석한 작품의 숨겨진 스토리와 의미를 발견하고, 당신만의 특별한 컬렉션을 만들어보세요.</p>
+                        <a href="#" class="card-button">AI 작품 탐색 →</a>
+                    </div>
+
+                    <div class="feature-card">
+                        <span class="card-icon">🛡️</span>
+                        <h3 class="card-title">안심 거래</h3>
+                        <p class="card-description">검증된 작가와의 안전한 거래 시스템으로 진품 보장과 투명한 가격 정보를 제공합니다.</p>
+                        <a href="#" class="card-button">거래 프로세스 보기 →</a>
+                    </div>
+
+                    <div class="feature-card">
+                        <span class="card-icon">💬</span>
+                        <h3 class="card-title">즉시 소통·견적</h3>
+                        <p class="card-description">작가와 직접 대화하며 작품에 대한 질문을 하고, 맞춤형 견적을 받아보세요.</p>
+                        <a href="#" class="card-button">작가와 대화하기 →</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 예술가 전용 페이지 -->
+        <section id="artist-section" class="content-section">
+            <div class="layout-container">
+                <!-- 좌측 소개 섹션 -->
+                <div class="intro-section">
+                    <!-- 예술 작품 카드 -->
+                    <div class="artwork-card">
+                        <div class="artwork-image"></div>
+                        <div class="artwork-details">
+                            <h3 class="artwork-title">꿈을 키우는 손</h3>
+                            <p class="artist-info">직접적 작가 (35세) • 수채화 • 유화</p>
+                            <div class="price-tag">₩500,000</div>
+                        </div>
+                    </div>
+                    
+                    <h1 class="intro-title">🧑‍🎨 아티스트 예술가 전용 플랫폼</h1>
+                    <p class="intro-subtitle">당신의 작품과 스토리를 세상에 알리고 새로운 기회를 만나보세요.</p>
+                    <a href="#" class="cta-button purple">포트폴리오 만들기 →</a>
+                </div>
+
+                <!-- 우측 카드 섹션 -->
+                <div class="cards-section">
+                    <div class="feature-card">
+                        <span class="card-icon">🎨</span>
+                        <h3 class="card-title">포트폴리오 최적화</h3>
+                        <p class="card-description">전문적인 포트폴리오를 쉽게 제작하고, 작품의 스토리를 효과적으로 전달할 수 있습니다.</p>
+                        <a href="#" class="card-button purple">포트폴리오 만들기 →</a>
+                    </div>
+
+                    <div class="feature-card">
+                        <span class="card-icon">📊</span>
+                        <h3 class="card-title">거래 관리</h3>
+                        <p class="card-description">작품 판매부터 배송까지 모든 거래 과정을 체계적으로 관리하고 추적할 수 있습니다.</p>
+                        <a href="#" class="card-button purple">거래 정보 설정 →</a>
+                    </div>
+
+                    <div class="feature-card">
+                        <span class="card-icon">👥</span>
+                        <h3 class="card-title">고객 관계 관리</h3>
+                        <p class="card-description">콜렉터와의 소통을 통해 지속적인 관계를 구축하고, 새로운 작품 기회를 발견하세요.</p>
+                        <a href="#" class="card-button purple">고객 정보 시작 →</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        </main>
+    </section>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+        <p class="footer-text">© 2025 Artisty Platform</p>
+    </footer>
+
+    <script>
+        function switchTab(tabName) {
+            // 모든 탭 버튼에서 active 클래스 제거
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // 모든 콘텐츠 섹션에서 active 클래스 제거
+            const contentSections = document.querySelectorAll('.content-section');
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // 클릭된 탭 버튼에 active 클래스 추가
+            event.target.classList.add('active');
+
+            // 해당 콘텐츠 섹션에 active 클래스 추가
+            const targetSection = document.getElementById(tabName + '-section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 기본적으로 콜렉터 탭이 활성화되어 있음
+            console.log('Artisty 플랫폼이 로드되었습니다.');
+        });
+    </script>
+</body>
+</html>
