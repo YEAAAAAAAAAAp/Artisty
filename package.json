@@ -1,0 +1,39 @@
+{
+  "name": "artisty-landing",
+  "version": "1.0.0",
+  "description": "Artisty - 예술가-콜렉터 상거래 플랫폼 랜딩페이지",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server -p 8000 -o",
+    "dev": "http-server -p 3000 -o",
+    "build": "echo 'Static site - no build process needed'",
+    "deploy": "echo 'Deploy to your hosting service'",
+    "lint": "echo 'No linting configured for static HTML'",
+    "test": "echo 'No tests configured'"
+  },
+  "keywords": [
+    "art",
+    "ecommerce",
+    "landing-page",
+    "artist",
+    "collector",
+    "platform",
+    "korean"
+  ],
+  "author": "Artisty Team",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/artisty-landing.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/artisty-landing/issues"
+  },
+  "homepage": "https://your-username.github.io/artisty-landing",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
